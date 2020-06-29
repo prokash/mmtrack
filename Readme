@@ -1,0 +1,65 @@
+-- Author: Prokash Sinha, prokash@garlic.com.
+
+-- How to build: There is a simple Makefile in the same directory, use the followng command on a tty terminal
+	$ make
+
+It should build libmemstats.so in the same directory where you have other files.
+
+-- How to install:  From terminal execute the following command.
+	$ export LD_PRELOAD=/home/prokash/verkeda/libmemstats.so
+
+-- How to uninstall: From the current tty session
+	$ export LD_PRELOAD=
+
+
+-- How to run:  This is a linux shared object ( .so ) file. Anytime you execute a command from the same terminal window it would start executing. For example: $python. Hit enter every now and then on the python interpreter and see the output.
+
+-- Unix distribution: Linux prokash-Kudu 4.2.0-42-generic #49-Ubuntu SMP Tue Jun 28 21:26:26 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+
+-- GCC : gcc (Ubuntu 5.2.1-22ubuntu2) 5.2.1 20151010
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+
+Satus Notes:
+
+	Used the link -- https://www.gnu.org/software/libc/manual/html_node/Hooks-for-Malloc.html  for getting the idea. 
+
+	Compiler should have aligned allocation, so did not use the realign hook
+
+	UTC time format is not worked, so just plain local time.
+
+	Instead of ### in the print, it is just number of bytes.
+
+Testing:
+
+	local testing using $ gcc main.c seems to be working.
+	$ ./a.out 100  /* to loop thru 100 times 1 sec pause between iter.
+
+	find .   or find /  working
+
+	python and google-chrome does not work. One of the malloc that adjust
+	the allocation to keep size ( since free does not have size as an arg)
+        allocates correctly, but free( void*) does not go thru the shared obj.
+
+Complexity:
+
+	Since the aging is based on time, Hash Tables are used to minimize 
+	the Inset and Remove time of memory allocations and free. 
+	Address table H has size 0xffff
+	whereas Time table T has size 0xfffff(roughly 24 days to wrap around).
+
+Alternative Approach:
+
+	dlsym method could be tried to hook directly into the memory routines,
+	since the __malloc_hook and friends are depricated.
+
+
+
+
+
+
+
+
