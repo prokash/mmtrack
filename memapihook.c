@@ -14,7 +14,7 @@
 #include "hashsep.h"
 
 
-#define printf(...)
+//#define printf(...)
 
 pthread_mutex_t lock;
 
@@ -341,18 +341,11 @@ MyRealloc(void *oldp, unsigned int size)
   unsigned int mask = 1 <<31;
 
   ptr = oldp;
-  //int sizeOfint = sizeof(int);
-  //int sizeOflong = sizeof(long);
-  if (!ptr){
-     ptr = realloc(ptr, size + sizeof(int));
-  }else{
-     ptr  = (void *)( ((int *) oldp) - 1);
-     ptr = realloc(ptr, size + sizeof(int));
-  }
+  ptr  = (void *)( ((int *) oldp) - 1);
+  ptr = realloc(ptr, size + sizeof(int));
 
-   mask = size + mask;
-    // just use size
-    *(int *)ptr =  size;
+  // just use size
+  *(int *)ptr =  size;
 
    printf ("MyRealloc (%i) oldp=%p returs %p\n", *(int* ) ptr, oldp, ptr);
    ptr  = (void *)( ((int *) ptr) + 1);
@@ -372,7 +365,16 @@ my_realloc_hook (void *addr, size_t size, const void *caller)
   __realloc_hook = f_old_realloc_hook;
   __free_hook = f_old_free_hook;
 
-  ptr = MyRealloc(addr, size );
+     /* if ptr is null it is equivalent to malloc(size) */
+  if (addr == NULL ){
+     ptr = malloc(size );
+
+  }else if (size == 0 ){
+    free(addr);
+  }else {
+
+     ptr = MyRealloc(addr, size );
+  }
   if (ptr){
 
       record_mem_events (ptr,  size, true);

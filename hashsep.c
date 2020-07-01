@@ -184,6 +184,7 @@
             		 free(tmp);
             		 break;
             	 }
+                 P = P->Next;
              }
          }
 
